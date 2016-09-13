@@ -1,0 +1,5 @@
+# It's not good idea to show your cookies to everyone..
+cookies.txt
+
+# Credentials would contain your auth data. Don't show this file to anyone.
+credentials.py
