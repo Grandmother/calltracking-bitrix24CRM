@@ -54,8 +54,5 @@ class Calltracking:
         if calls == None:
             return None
 
-        # for call in calls:
-            # print("\t", call)
-
         callsAfter = [call for call in calls if call['datetime'] > after]
         return callsAfter
