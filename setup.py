@@ -9,6 +9,7 @@ setup( name = "calltracking-bitrix24CRM",
        author = "Roman Kovtyukh",
        author_email = "HelloDearGrandma@gmail.com",
        license = "MIT",
-       packages = ['calltracking-bitrix24CRM'],
+       scripts = ['bin/calltracking_bitrix'],
        install_requieres = ['bitrix24-python-sdk',
-                            'phonenumbers'])
+                            'phonenumbers',
+                            'pysmsru'])

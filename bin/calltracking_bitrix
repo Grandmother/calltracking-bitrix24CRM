@@ -1,6 +1,7 @@
 import bitrix24
 import argparse
 import time
+import traceback
 
 import bitrix_crm
 import phonenumbers
@@ -89,32 +90,35 @@ def main():
     existed_calls = get_existed_calls(bt)
 
     while True:
-        ct = calltrackingInit()
-        calls = ct.GetInfo(calltrackingCred["project"], lastCall)
-        # save the time of the last call.
-        if len(calls) > 0:
-            lastCall = calls[len(calls)-1]["datetime"]
+        try:
+            ct = calltrackingInit()
+            calls = ct.GetInfo(calltrackingCred["project"], lastCall)
+            # save the time of the last call.
+            if len(calls) > 0:
+                lastCall = calls[len(calls)-1]["datetime"]
 
-        for call in calls:
-            val = call['caller']
-            try:
-                phoneObj = phonenumbers.parse(val, "RU")
-                if phonenumbers.is_possible_number(phoneObj):
-                    val = phonenumbers.format_number(phoneObj, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
-            except:
-                print("Exception on this number: ", val)
+            for call in calls:
+                val = call['caller']
+                try:
+                    phoneObj = phonenumbers.parse(val, "RU")
+                    if phonenumbers.is_possible_number(phoneObj):
+                        val = phonenumbers.format_number(phoneObj, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+                except:
+                    print("Exception on this number: ", val)
 
-            if val in existed_calls:
-                continue
-            print(call)
-            bt.call("crm.lead.add",
-                    {'FIELDS':{'TITLE': val,
-                               'SOURCE_ID': sources["CALL"],
-                               'ASSIGNED_BY_ID': bitrixCred["employee"],
-                               'PHONE': { '0': {'VALUE': val, "VALUE_TYPE": "WORK"}}
-                               }
-                     })
-            existed_calls.append(val)
+                if val in existed_calls:
+                    continue
+                print(call)
+                bt.call("crm.lead.add",
+                        {'FIELDS':{'TITLE': val,
+                                   'SOURCE_ID': sources["CALL"],
+                                   'ASSIGNED_BY_ID': bitrixCred["employee"],
+                                   'PHONE': { '0': {'VALUE': val, "VALUE_TYPE": "WORK"}}
+                                   }
+                         })
+                existed_calls.append(val)
+        except Exception as ex:
+            print(traceback.format_exc())
 
         time.sleep(60 * 2)
 
