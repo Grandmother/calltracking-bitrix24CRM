@@ -2,6 +2,7 @@ import bitrix24
 import argparse
 import time
 import traceback
+import pysmsru
 
 import bitrix_crm
 import phonenumbers
@@ -119,6 +120,12 @@ def main():
                 existed_calls.append(val)
         except Exception as ex:
             print(traceback.format_exc())
+            smsru = pysmsru.SMSRU(
+                api_id='32011307-94a1-e384-2d33-2a9af30abd26',
+                debug=True,
+                translit=True)
+            smsru.send_one(phone_to='79889980550', message='Problems with calltracking-bitrix script!')
+
 
         time.sleep(60 * 2)
 
