@@ -22,7 +22,6 @@ class Calltracking:
         resp = json.loads(resp)
         if resp["error_code"] == "0":
             self.token = resp["data"]
-            print("Authorized as " + self.login)
             return True
         else:
             print("Not uthorized. Error text: " + resp["error_text"])

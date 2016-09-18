@@ -89,7 +89,6 @@ def main():
     existed_calls = get_existed_calls(bt)
 
     while True:
-        print("Let's look for a callers.")
         ct = calltrackingInit()
         calls = ct.GetInfo(calltrackingCred["project"], lastCall)
         # save the time of the last call.
