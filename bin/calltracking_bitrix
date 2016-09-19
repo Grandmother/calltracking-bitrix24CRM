@@ -2,13 +2,12 @@ import bitrix24
 import argparse
 import time
 import traceback
-import pysmsru
+import smsru
 
 import bitrix_crm
 import phonenumbers
 import calltracking
-from credentials import bitrixApplication as bitrixCred
-from credentials import calltrackingApplication as calltrackingCred
+import credentials
 
 sources = {
     "CALL" : "CALL",
@@ -19,19 +18,19 @@ sources = {
 lastCall = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time() - 5*60))
 
 def calltrackingInit():
-    ct = calltracking.Calltracking(calltrackingCred["login"], calltrackingCred["password"])
+    ct = calltracking.Calltracking(credentials.calltrackingApplication["login"], credentials.calltrackingApplication["password"])
     ct.Authorize()
     return ct
 
 def bitrixInit():
 
-    bt = bitrix_crm.BitrixCrm(bitrixCred["appID"],
-                              bitrixCred["appSecretKey"],
-                              bitrixCred["companyName"],
-                              bitrixCred["oauthRedirectURL"])
+    bt = bitrix_crm.BitrixCrm(credentials.bitrixApplication["appID"],
+                              credentials.bitrixApplication["appSecretKey"],
+                              credentials.bitrixApplication["companyName"],
+                              credentials.bitrixApplication["oauthRedirectURL"])
     bt.Authorize()
 
-    btApi = bitrix24.Bitrix24(bitrixCred["companyName"], bt.access_token)
+    btApi = bitrix24.Bitrix24(credentials.bitrixApplication["companyName"], bt.access_token)
     return btApi
 
 def parseArgs():
@@ -87,13 +86,14 @@ def main():
     parseArgs()
     bt = bitrixInit()
 
-    # return get_existed_calls(bt)
     existed_calls = get_existed_calls(bt)
+
+    sms_api = smsru.SmsClient(credentials.smsru["id"]).get_api()
 
     while True:
         try:
             ct = calltrackingInit()
-            calls = ct.GetInfo(calltrackingCred["project"], lastCall)
+            calls = ct.GetInfo(credentials.calltrackingApplication["project"], lastCall)
             # save the time of the last call.
             if len(calls) > 0:
                 lastCall = calls[len(calls)-1]["datetime"]
@@ -113,18 +113,14 @@ def main():
                 bt.call("crm.lead.add",
                         {'FIELDS':{'TITLE': val,
                                    'SOURCE_ID': sources["CALL"],
-                                   'ASSIGNED_BY_ID': bitrixCred["employee"],
+                                   'ASSIGNED_BY_ID': credentials.bitrixApplication["employee"],
                                    'PHONE': { '0': {'VALUE': val, "VALUE_TYPE": "WORK"}}
                                    }
                          })
                 existed_calls.append(val)
         except Exception as ex:
             print(traceback.format_exc())
-            smsru = pysmsru.SMSRU(
-                api_id='32011307-94a1-e384-2d33-2a9af30abd26',
-                debug=True,
-                translit=True)
-            smsru.send_one(phone_to='79889980550', message='Problems with calltracking-bitrix script!')
+            sms_api.send(to=credentials.smsru['admin_phone'], text="Problem in calltracking-bitrix script.")
 
 
         time.sleep(60 * 2)

@@ -1,3 +1,8 @@
+smsru = {
+    'admin_phone' : "+79889980550",
+    'id':    '32011307-94a1-e384-2d33-2a9af30abd26',
+}
+
 calltrackingApplication = {
     "login": "your_mail@example.domen",
     "password": "your_calltracking_password",
