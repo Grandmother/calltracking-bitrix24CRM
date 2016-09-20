@@ -63,20 +63,3 @@ class BitrixCrm:
         self.refresh_token = jsonResp["refresh_token"]
         print("Got the access token.\n\tNew access_token: {}\n\tNew refresh_token: {}".format(self.access_token,
                                                                                               self.refresh_token))
-
-
-    # Refreshes the access token. Need to be called every one hour.
-    def RefreshToken(self):
-        q = self.oauth2StepURL +\
-            "?grant_type=" + self.refreshGrant +\
-            "&client_id=" + self.clientID +\
-            "&client_secret=" + self.appKey +\
-            "&refresh_token=" + self.refresh_token
-
-        queryParsed, response = self.request(q)
-
-        jsonResp = json.loads(response)
-        self.access_token = jsonResp["access_token"]
-        self.refresh_token = jsonResp["refresh_token"]
-        print("Token is refreshed.\n\tNew access_token: {}\n\tNew refresh_token: {}".format(self.access_token,
-                                                                                            self.refresh_token))
