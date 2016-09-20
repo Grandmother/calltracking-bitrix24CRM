@@ -50,15 +50,14 @@ def get_existed_calls(bt):
     total = 1
     existed_calls = list()
     while next < total:
-        print("next: ", next, "total: ", total)
         resp = bt.call("crm.lead.list",{
                                     'SELECT': {'0': {'PHONE'}},
                                     'start': next
                                         })
         raw_existed_calls = resp['result']
-        print("calls this time: ", len(raw_existed_calls))
         total = resp['total']
         next += len(raw_existed_calls)
+
         for call in raw_existed_calls:
             try:
                 call['PHONE']
@@ -76,9 +75,6 @@ def get_existed_calls(bt):
                 except:
                     print("Exception on this number: ", val)
                 existed_calls.append(val)
-                print(val)
-
-        print("total calls: ", len(existed_calls))
 
     return existed_calls
 
