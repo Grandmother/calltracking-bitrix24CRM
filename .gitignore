@@ -4,5 +4,12 @@ cookies.txt
 # Credentials would contain your auth data. Don't show this file to anyone.
 credentials.py
 
-__pycache__
+# PyCharm directory
 .idea
+
+build/*
+__pycache__
+*.pyc
+calltracking_bitrix24CRM.egg-info/*
+dist/*
+
