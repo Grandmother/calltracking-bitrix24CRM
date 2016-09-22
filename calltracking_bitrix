@@ -87,9 +87,18 @@ def main():
     existed_calls = get_existed_calls(bt)
 
     sms_api = smsru.SmsClient(credentials.smsru["id"]).get_api()
+    need_to_send_sms = False
 
     while True:
         try:
+            if need_to_send_sms:
+                try:
+                    sms_api.send(to=credentials.smsru['admin_phone'], text="Problem in calltracking-bitrix script.")
+                    need_to_send_sms = False
+                except Exception:
+                    print("We even can't send SMS((")
+                    need_to_send_sms = True
+
             ct = calltrackingInit()
             calls = ct.GetInfo(credentials.calltrackingApplication["project"], lastCall)
             # save th3e time of the last call.
@@ -119,7 +128,9 @@ def main():
                 existed_calls.append(val)
         except Exception as ex:
             print(traceback.format_exc())
-            sms_api.send(to=credentials.smsru['admin_phone'], text="Problem in calltracking-bitrix script.")
+            need_to_send_sms = True
+            time.sleep(60)
+
 
 
         time.sleep(60 * 2)
