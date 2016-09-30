@@ -7,9 +7,11 @@ credentials.py
 # PyCharm directory
 .idea
 
-build/*
-__pycache__
+# Python compiled code.
 *.pyc
+
+#python service dirs
+__pycache__
+build/*
 calltracking_bitrix24CRM.egg-info/*
 dist/*
-
