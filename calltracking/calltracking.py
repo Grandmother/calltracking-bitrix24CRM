@@ -1,7 +1,9 @@
 import urllib.request
+import urllib.error
 import json
 import time
 from urllib.parse import quote
+from functools import wraps
 import logging
 
 SECONDS_PER_DAY=60*60*24
@@ -13,6 +15,8 @@ class Calltracking:
         self.passwd = passwd
         self.loginURL = "https://calltracking.ru/api/login.php"
         self.getDataURL = "https://calltracking.ru/api/get_data.php"
+
+    # @retry(urllib.error.URLError, tries=4, delay=30, backof)
 
     def Authorize(self):
         resp = urllib.request.urlopen(self.loginURL + "?account_type=calltracking" +

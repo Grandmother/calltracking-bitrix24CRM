@@ -3,6 +3,7 @@
 import bitrix24
 import argparse
 import time
+from datetime import datetime
 import traceback
 import smsru
 import phonenumbers
@@ -81,6 +82,8 @@ def get_existed_calls(bt):
 def main():
     global lastCall
 
+    print("Start time: " + str(datetime.now().time()))
+
     parseArgs()
     bt = bitrixInit()
 
@@ -127,7 +130,9 @@ def main():
                 print(resp)
                 existed_calls.append(val)
         except Exception as ex:
+            print("Problem time: " + str(datetime.now().time()))
             print(traceback.format_exc())
+            bt.refresh_tokens()
             need_to_send_sms = True
             time.sleep(60)
 
