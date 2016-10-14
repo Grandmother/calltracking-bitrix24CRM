@@ -91,9 +91,12 @@ def main():
 
     sms_api = smsru.SmsClient(credentials.smsru["id"]).get_api()
     need_to_send_sms = False
+    log_after_fall = False
 
     while True:
         try:
+            if log_after_fall:
+                print("Time after fall: ", str(datetime.now().time()))
             if need_to_send_sms:
                 try:
                     sms_api.send(to=credentials.smsru['admin_phone'], text="Problem in calltracking-bitrix script.")
@@ -131,10 +134,17 @@ def main():
                 existed_calls.append(val)
         except Exception as ex:
             print("Problem time: " + str(datetime.now().time()))
-            print(traceback.format_exc())
+            print(traceback.TracebackException.format_exception_only())
+            print("End of exception logging.\nTry to sleep before refreshing BT token.")
+            time.sleep(60*5)
+            print("Now -- refresh the BT token.")
             bt.refresh_tokens()
             need_to_send_sms = True
+            print("need_to_send_sms: ", need_to_send_sms)
+            print("Sleep for a minute")
             time.sleep(60)
+            log_after_fall = True
+            print("Wake up!")
 
 
 
